@@ -1,4 +1,5 @@
 #include "event_handler.hpp"
+#include "processor.hpp"
 
 template<class TEvent>
 EventResult EventHandler::handle(const TEvent& event) {
@@ -23,6 +24,10 @@ EventResult EventHandler::handle<ClientArrivedEvent>(
 template<>
 EventResult EventHandler::handle<ClientTakeTableEvent>(
     const ClientTakeTableEvent& event) {
+  if (event.id == 12) {
+    return EventResult{true};
+  }
+
   const auto& client_name = event.client_name;
   auto table_id = event.table_id;
 
@@ -46,6 +51,9 @@ EventResult EventHandler::handle<ClientWaitingEvent>(
   }
   if (_client_registry->get_waiters_count() > _context.tables_count) {
     // TODO: Produce event
+    _processor->process_event(
+        ClientLeftEvent{11, event.created_at, client_name});
+
     if (_client_registry->has_client(client_name)) {
       _client_registry->remove_client(client_name);
     }
@@ -58,8 +66,9 @@ EventResult EventHandler::handle<ClientWaitingEvent>(
 template<>
 EventResult EventHandler::handle<ClientLeftEvent>(
     const ClientLeftEvent& event) {
-  if (event.id == 12)
+  if (event.id == 11) {
     return EventResult{true};
+  }
 
   const auto& client_name = event.client_name;
 
@@ -76,6 +85,9 @@ EventResult EventHandler::handle<ClientLeftEvent>(
       // TODO: Produce event
       const auto& waiter = _client_registry->pop_first_waiter();
       _table_registry->pin_client(waiter, table_id, event.created_at);
+
+      _processor->process_event(
+          ClientTakeTableEvent{12, event.created_at, waiter, table_id});
     }
   }
   return EventResult{true};

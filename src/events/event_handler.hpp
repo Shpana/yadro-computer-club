@@ -23,21 +23,26 @@ struct EventResult {
       : is_ok(_is_ok), message(std::nullopt) {}
 };
 
+// NOTE: How can I avoid cross including?
+class Processor;
+
 class EventHandler {
 public:
   EventHandler(const Context& context,
                const std::shared_ptr<TableRegistry>& table_registry,
-               const std::shared_ptr<ClientRegistry>& client_registry)
+               const std::shared_ptr<ClientRegistry>& client_registry,
+               Processor* processor)
       : _context(context),
-        _table_registry(table_registry), _client_registry(client_registry) {}
+        _table_registry(table_registry), _client_registry(client_registry), _processor(processor) {}
 
   template<class TEvent>
   EventResult handle(const TEvent& event);
 
 private:
   const Context& _context;
-  const std::shared_ptr<TableRegistry>& _table_registry;
-  const std::shared_ptr<ClientRegistry>& _client_registry;
+  std::shared_ptr<TableRegistry> _table_registry;
+  std::shared_ptr<ClientRegistry> _client_registry;
+  Processor* _processor;
 };
 
 #endif// YADRO_COMPUTER_CLUB_EVENT_HANDLER_HPP

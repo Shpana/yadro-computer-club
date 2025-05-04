@@ -12,7 +12,7 @@ Processor::Processor(const Context& context, std::istream& input, std::ostream& 
   _accountant = std::make_shared<Accountant>(context.tables_count);
   _client_registry = std::make_shared<ClientRegistry>();
   _table_registry = std::make_shared<TableRegistry>(context.tables_count, _accountant);
-  _handler = std::make_shared<EventHandler>(_context, _table_registry, _client_registry);
+  _handler = std::make_shared<EventHandler>(_context, _table_registry, _client_registry, this);
 }
 
 void Processor::run() {
@@ -25,7 +25,7 @@ void Processor::run() {
     _table_registry->unpin_client(client, _context.end_time);
 
     auto event = ClientLeftEvent{11, _context.end_time, client};
-    _process_event(event);
+    process_event(event);
   }
 
   _output << to_string_time(_context.end_time) << '\n';
@@ -51,22 +51,22 @@ void Processor::_process_event_line(const std::string& line) {
   switch (event_id) {
     case 1: {
       auto event = parse_event_from_line<ClientArrivedEvent>(line);
-      _process_event(event);
+      process_event(event);
       break;
     }
     case 2: {
       auto event = parse_event_from_line<ClientTakeTableEvent>(line);
-      _process_event(event);
+      process_event(event);
       break;
     }
     case 3: {
       auto event = parse_event_from_line<ClientWaitingEvent>(line);
-      _process_event(event);
+      process_event(event);
       break;
     }
     case 4: {
       auto event = parse_event_from_line<ClientLeftEvent>(line);
-      _process_event(event);
+      process_event(event);
       break;
     }
     default: {
@@ -77,12 +77,12 @@ void Processor::_process_event_line(const std::string& line) {
 }
 
 template<class TEvent>
-void Processor::_process_event(const TEvent& event) {
+void Processor::process_event(const TEvent& event) {
   auto result = _handler->handle<TEvent>(event);
   _output << serialize_event(event) << '\n';
 
   if (!result.is_ok) {
     auto error_event = ErrorEvent{13, result.created_at, result.message};
-    _process_event(error_event);
+    process_event(error_event);
   }
 }
