@@ -11,11 +11,13 @@ class Accountant {
     time_t occupied_time{0};
     time_t updated_at{0};
   };
+
 public:
   struct ReportItem {
     size_t revenue{0};
     time_t occupied_time{0};
   };
+
 public:
   Accountant(size_t tables_count);
 

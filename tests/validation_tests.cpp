@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "validation.hpp"
+#include "validations/validation.hpp"
 
 TEST(validation, time_format) {
   EXPECT_TRUE(is_valid_time_format("22:22"));

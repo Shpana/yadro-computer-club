@@ -1,8 +1,8 @@
 add_library(yadro_computer_club_lib
-        times.hpp
-        validation.cpp
-        validation.hpp
-        times.cpp
+        io/utils/times.hpp
+        validations/validation.cpp
+        validations/validation.hpp
+        io/utils/times.cpp
         events/event_handler.hpp
         events/event.hpp
         events/context.hpp
@@ -12,11 +12,13 @@ add_library(yadro_computer_club_lib
         registries/table_registry.cpp
         registries/accountant.hpp
         registries/accountant.cpp
-        events/parsing.hpp
+        io/parsing.hpp
         processor.hpp
         processor.cpp
         events/event_handler.cpp
-        events/serializing.hpp
+        io/serializing.hpp
+        io/parsing.cpp
+        io/serializing.cpp
 )
 target_include_directories(yadro_computer_club_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

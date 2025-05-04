@@ -48,9 +48,8 @@ size_t TableRegistry::get_pinned_table(const std::string& client_name) const {
 std::vector<std::string> TableRegistry::get_all_pinned_clients() const {
   std::vector<std::string> pinned_clients;
   pinned_clients.reserve(_pinned_clients.size());
-  for (const auto& [key, value] : _pinned_clients) {
+  for (const auto& [key, value]: _pinned_clients) {
     pinned_clients.push_back(key);
   }
   return pinned_clients;
 }
-

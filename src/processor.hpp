@@ -3,8 +3,8 @@
 
 #include "events/event_handler.hpp"
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 class Processor {
 public:

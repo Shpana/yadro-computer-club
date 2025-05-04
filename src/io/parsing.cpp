@@ -1,11 +1,26 @@
-#ifndef YADRO_COMPUTER_CLUB_PARSING_HPP
-#define YADRO_COMPUTER_CLUB_PARSING_HPP
+#include "parsing.hpp"
 
-#include "event.hpp"
-#include "times.hpp"
+#include "events/event.hpp"
+#include "io/utils/times.hpp"
 
-#include <string>
-#include <sstream>
+Context parse_context(std::istream& input) {
+  Context context;
+
+  std::string line;
+  std::getline(input, line);
+  context.tables_count = std::stoi(line);
+
+  std::getline(input, line);
+  std::istringstream iss{line};
+  std::string raw_start_time, raw_end_time;
+  iss >> raw_start_time >> raw_end_time;
+  context.start_time = to_time(raw_start_time);
+  context.end_time = to_time(raw_end_time);
+
+  std::getline(input, line);
+  context.price_per_hour = std::stoi(line);
+  return context;
+}
 
 size_t parse_event_id_from_line(const std::string& line) {
   std::istringstream iss{line};
@@ -16,11 +31,8 @@ size_t parse_event_id_from_line(const std::string& line) {
   return event_id;
 }
 
-template<class TEvent>
-TEvent parse_from_line(const std::string& line);
-
 template<>
-ClientArrivedEvent parse_from_line(const std::string& line) {
+ClientArrivedEvent parse_event_from_line(const std::string& line) {
   std::istringstream iss{line};
 
   size_t event_id;
@@ -31,7 +43,7 @@ ClientArrivedEvent parse_from_line(const std::string& line) {
 }
 
 template<>
-ClientTakeTableEvent parse_from_line(const std::string& line) {
+ClientTakeTableEvent parse_event_from_line(const std::string& line) {
   std::istringstream iss{line};
 
   size_t event_id, table_id;
@@ -42,7 +54,7 @@ ClientTakeTableEvent parse_from_line(const std::string& line) {
 }
 
 template<>
-ClientWaitingEvent parse_from_line(const std::string& line) {
+ClientWaitingEvent parse_event_from_line(const std::string& line) {
   std::istringstream iss{line};
 
   size_t event_id;
@@ -53,7 +65,7 @@ ClientWaitingEvent parse_from_line(const std::string& line) {
 }
 
 template<>
-ClientLeftEvent parse_from_line(const std::string& line) {
+ClientLeftEvent parse_event_from_line(const std::string& line) {
   std::istringstream iss{line};
 
   size_t event_id;
@@ -62,5 +74,3 @@ ClientLeftEvent parse_from_line(const std::string& line) {
   return ClientLeftEvent{
       event_id, to_time(raw_created_at), std::move(client_name)};
 }
-
-#endif// YADRO_COMPUTER_CLUB_PARSING_HPP

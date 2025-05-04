@@ -6,9 +6,9 @@
 #include "registries/client_registry.hpp"
 #include "registries/table_registry.hpp"
 
-#include <stdexcept>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 struct EventResult {

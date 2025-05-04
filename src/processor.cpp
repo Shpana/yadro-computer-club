@@ -1,7 +1,8 @@
 #include "processor.hpp"
 
-#include "events/parsing.hpp"
-#include "events/serializing.hpp"
+#include "io/parsing.hpp"
+#include "io/serializing.hpp"
+#include "io/utils/times.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -20,7 +21,7 @@ void Processor::run() {
 
   auto clients_to_input = _table_registry->get_all_pinned_clients();
   std::sort(clients_to_input.begin(), clients_to_input.end());
-  for (const auto& client : clients_to_input) {
+  for (const auto& client: clients_to_input) {
     _table_registry->unpin_client(client, _context.end_time);
 
     auto event = ClientLeftEvent{11, _context.end_time, client};
@@ -30,7 +31,7 @@ void Processor::run() {
   _output << to_string_time(_context.end_time) << '\n';
 
   auto report = _accountant->prepare_report(_context.price_per_hour);
-  for (auto [key, value] : report) {
+  for (auto [key, value]: report) {
     _output << key << ' '
             << value.revenue << ' '
             << to_string_time(value.occupied_time) << '\n';
@@ -49,22 +50,22 @@ void Processor::_process_event_line(const std::string& line) {
 
   switch (event_id) {
     case 1: {
-      auto event = parse_from_line<ClientArrivedEvent>(line);
+      auto event = parse_event_from_line<ClientArrivedEvent>(line);
       _process_event(event);
       break;
     }
     case 2: {
-      auto event = parse_from_line<ClientTakeTableEvent>(line);
+      auto event = parse_event_from_line<ClientTakeTableEvent>(line);
       _process_event(event);
       break;
     }
     case 3: {
-      auto event = parse_from_line<ClientWaitingEvent>(line);
+      auto event = parse_event_from_line<ClientWaitingEvent>(line);
       _process_event(event);
       break;
     }
     case 4: {
-      auto event = parse_from_line<ClientLeftEvent>(line);
+      auto event = parse_event_from_line<ClientLeftEvent>(line);
       _process_event(event);
       break;
     }

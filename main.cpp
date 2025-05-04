@@ -1,41 +1,19 @@
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
-#include "src/validation.hpp"
-#include "src/times.hpp"
-#include "src/events/context.hpp"
-
+#include "src/io/parsing.hpp"
 #include "src/processor.hpp"
+#include "src/validations/validation.hpp"
 
-void handle_computer_club(std::istream& input, std::ostream& output) {
+void handle_computer_club(
+    std::istream& input, std::ostream& output) {
   if (!is_valid(input, output))
     return;
 
   input.clear();
   input.seekg(0);
 
-  std::string line;
-
-  size_t tables_count;
-  std::getline(input, line);
-  tables_count = std::stoi(line);
-
-  std::string raw_start_time, raw_end_time;
-  std::getline(input, line);
-  std::istringstream iss1{line};
-  iss1 >> raw_start_time >> raw_end_time;
-
-  size_t table_price_per_hour;
-  std::getline(input, line);
-  table_price_per_hour = std::stoi(line);
-
-  auto context = Context{
-      to_time(raw_start_time),
-      to_time(raw_end_time),
-      tables_count,
-      table_price_per_hour
-  };
+  auto context = parse_context(input);
   auto processor = Processor(context, input, output);
   processor.run();
 }

@@ -1,14 +1,8 @@
-#ifndef YADRO_COMPUTER_CLUB_SERIALIZING_HPP
-#define YADRO_COMPUTER_CLUB_SERIALIZING_HPP
+#include "serializing.hpp"
 
-#include "times.hpp"
-#include "event.hpp"
+#include "io/utils/times.hpp"
 
-#include <string>
 #include <sstream>
-
-template<class TEvent>
-std::string serialize_event(const TEvent& event);
 
 template<>
 std::string serialize_event(const ClientArrivedEvent& event) {
@@ -69,5 +63,3 @@ std::string serialize_event(const ErrorEvent& event) {
   }
   return oss.str();
 }
-
-#endif// YADRO_COMPUTER_CLUB_SERIALIZING_HPP
