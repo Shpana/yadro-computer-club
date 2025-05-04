@@ -2,8 +2,8 @@
 #define YADRO_COMPUTER_CLUB_EVENT_HPP
 
 #include <ctime>
-#include <string>
 #include <optional>
+#include <string>
 
 struct Event {
   size_t id;

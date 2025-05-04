@@ -13,8 +13,7 @@ void ClientRegistry::remove_client(const std::string& client_name) {
 }
 
 bool ClientRegistry::has_any_waiter() {
-
-  return _waiting_clients_queue.empty();
+  return !_waiting_clients_queue.empty();
 }
 
 void ClientRegistry::add_waiter(const std::string& client_name) {

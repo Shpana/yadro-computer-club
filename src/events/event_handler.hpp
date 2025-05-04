@@ -67,7 +67,7 @@ EventResult EventHandler::handle<ClientTakeTableEvent>(
   if (!_client_registry->has_client(client_name)) {
     return EventResult{false, "ClientUnknown"};
   }
-  _table_registry->pin_client(client_name, table_id);
+  _table_registry->pin_client(client_name, table_id, event.created_at);
   return EventResult{true};
 }
 
@@ -81,6 +81,9 @@ EventResult EventHandler::handle<ClientWaitingEvent>(
   }
   if (_client_registry->get_waiters_count() > _context.tables_count) {
     // TODO: Produce event
+    if (_client_registry->has_client(client_name)) {
+      _client_registry->remove_client(client_name);
+    }
     return EventResult{true};
   }
   _client_registry->add_waiter(event.client_name);
@@ -95,13 +98,17 @@ EventResult EventHandler::handle<ClientLeftEvent>(
   if (!_client_registry->has_client(client_name)) {
     return EventResult{false, "ClientUnknown"};
   }
+
   _client_registry->remove_client(client_name);
   if (_table_registry->is_client_pinned(client_name)) {
     auto table_id = _table_registry->get_pinned_table(client_name);
-    _table_registry->unpin_client(client_name);
-    // TODO: Produce event
-    const auto& waiter = _client_registry->pop_first_waiter();
-    _table_registry->pin_client(waiter, table_id);
+    _table_registry->unpin_client(client_name, event.created_at);
+
+    if (_client_registry->has_any_waiter()) {
+      // TODO: Produce event
+      const auto& waiter = _client_registry->pop_first_waiter();
+      _table_registry->pin_client(waiter, table_id, event.created_at);
+    }
   }
   return EventResult{true};
 }

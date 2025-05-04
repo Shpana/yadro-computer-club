@@ -1,7 +1,10 @@
 #include "table_registry.hpp"
 
-TableRegistry::TableRegistry(size_t tables_count)
-    : _tables_count(tables_count) {
+#include <vector>
+
+TableRegistry::TableRegistry(size_t tables_count,
+                             const std::shared_ptr<Accountant>& accountant)
+    : _tables_count(tables_count), _accountant(accountant) {
   for (size_t id = 1; id <= _tables_count; ++id) {
     _available_tables.insert(id);
   }
@@ -20,20 +23,35 @@ bool TableRegistry::is_client_pinned(const std::string& client_name) {
 }
 
 void TableRegistry::pin_client(
-    const std::string& client_name, size_t table_id) {
+    const std::string& client_name,
+    size_t table_id, time_t processed_at) {
   if (is_client_pinned(client_name)) {
-    unpin_client(client_name);
+    unpin_client(client_name, processed_at);
   }
   _available_tables.erase(table_id);
   _pinned_clients[client_name] = table_id;
+  _accountant->account_pin(table_id, processed_at);
 }
 
-void TableRegistry::unpin_client(const std::string& client_name) {
+void TableRegistry::unpin_client(
+    const std::string& client_name, time_t processed_at) {
   size_t table_id = _pinned_clients[client_name];
   _available_tables.insert(table_id);
   _pinned_clients.erase(client_name);
+  _accountant->account_unpin(table_id, processed_at);
 }
 
 size_t TableRegistry::get_pinned_table(const std::string& client_name) const {
   return _pinned_clients.at(client_name);
+}
+
+void TableRegistry::unpin_all(time_t processed_at) {
+  std::vector<std::string> clients_to_unpin;
+  clients_to_unpin.reserve(_pinned_clients.size());
+  for (const auto& [key, value] : _pinned_clients) {
+    clients_to_unpin.push_back(key);
+  }
+  for (const auto& client : clients_to_unpin) {
+    unpin_client(client, processed_at);
+  }
 }

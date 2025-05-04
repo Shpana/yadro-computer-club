@@ -33,10 +33,10 @@ void handle_computer_club(std::istream& input, std::ostream& output) {
 
   auto context = Context{to_time(raw_start_time), to_time(raw_end_time), tables_count};
 
-  std::shared_ptr<ClientRegistry> client_registry =
-      std::make_shared<ClientRegistry>(tables_count);
-  std::shared_ptr<TableRegistry> table_registry =
-      std::make_shared<TableRegistry>();
+  std::shared_ptr<ClientRegistry> client_registry = std::make_shared<ClientRegistry>();
+
+  std::shared_ptr<Accountant> accountant = std::make_shared<Accountant>(tables_count);
+  std::shared_ptr<TableRegistry> table_registry = std::make_shared<TableRegistry>(tables_count, accountant);
 
   EventHandler handler(context, table_registry, client_registry);
 
@@ -86,6 +86,15 @@ void handle_computer_club(std::istream& input, std::ostream& output) {
         break;
     }
   }
+
+  table_registry->unpin_all(to_time(raw_end_time));
+
+  for (auto [key, value] : accountant->prepare_report(table_price_per_hour)) {
+    std::cout << key
+              << ' ' << value.revenue
+              << ' ' << to_string_time(value.occupied_time) << '\n';
+  }
+  std::cout << std::endl;
 }
 
 int main(int argc, char* argv[]) {

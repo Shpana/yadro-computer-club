@@ -10,4 +10,6 @@ add_library(yadro_computer_club_lib
         registries/client_registry.cpp
         registries/table_registry.hpp
         registries/table_registry.cpp
+        registries/accountant.hpp
+        registries/accountant.cpp
 )
