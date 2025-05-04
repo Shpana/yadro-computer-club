@@ -12,4 +12,12 @@ add_library(yadro_computer_club_lib
         registries/table_registry.cpp
         registries/accountant.hpp
         registries/accountant.cpp
+        events/parsing.hpp
+        processor.hpp
+        processor.cpp
+        events/event_handler.cpp
+        events/serializing.hpp
+)
+target_include_directories(yadro_computer_club_lib
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )

@@ -5,6 +5,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 #include <set>
 #include <string>
 
@@ -19,8 +20,8 @@ public:
 
   void pin_client(const std::string& client_name, size_t table_id, time_t processed_at);
   void unpin_client(const std::string& client_name, time_t processed_at);
-  void unpin_all(time_t processed_at);
   [[nodiscard]] size_t get_pinned_table(const std::string& client_name) const;
+  [[nodiscard]] std::vector<std::string> get_all_pinned_clients() const;
 
 private:
   std::shared_ptr<Accountant> _accountant;

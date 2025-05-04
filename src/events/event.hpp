@@ -15,36 +15,39 @@ struct Event {
 };
 
 struct ClientArrivedEvent : public Event {
-  const std::string& client_name;
+  std::string client_name;
 
   ClientArrivedEvent(size_t _id, time_t _created_at,
-                     const std::string& _client_name)
-      : Event(_id, _created_at), client_name(_client_name) {}
+                     std::string&& _client_name)
+      : Event(_id, _created_at), client_name(std::move(_client_name)) {}
 };
 
 struct ClientTakeTableEvent : public Event {
-  const std::string& client_name;
+  std::string client_name;
   size_t table_id;
 
   ClientTakeTableEvent(size_t _id, time_t _created_at,
-                       const std::string& _client_name, size_t _table_id)
-      : Event(_id, _created_at), client_name(_client_name), table_id(_table_id) {}
+                       std::string&& _client_name, size_t _table_id)
+      : Event(_id, _created_at), client_name(std::move(_client_name)), table_id(_table_id) {}
 };
 
 struct ClientWaitingEvent : public Event {
-  const std::string& client_name;
+  std::string client_name;
 
   ClientWaitingEvent(size_t _id, time_t _created_at,
-                     const std::string& _client_name)
-      : Event(_id, _created_at), client_name(_client_name) {}
+                     std::string&& _client_name)
+      : Event(_id, _created_at), client_name(std::move(_client_name)) {}
 };
 
 struct ClientLeftEvent : public Event {
-  const std::string& client_name;
+  std::string client_name;
 
   ClientLeftEvent(size_t _id, time_t _created_at,
                   const std::string& _client_name)
       : Event(_id, _created_at), client_name(_client_name) {}
+  ClientLeftEvent(size_t _id, time_t _created_at,
+                  std::string&& _client_name)
+      : Event(_id, _created_at), client_name(std::move(_client_name)) {}
 };
 
 struct ErrorEvent : public Event {

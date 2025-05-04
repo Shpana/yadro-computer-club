@@ -45,13 +45,12 @@ size_t TableRegistry::get_pinned_table(const std::string& client_name) const {
   return _pinned_clients.at(client_name);
 }
 
-void TableRegistry::unpin_all(time_t processed_at) {
-  std::vector<std::string> clients_to_unpin;
-  clients_to_unpin.reserve(_pinned_clients.size());
+std::vector<std::string> TableRegistry::get_all_pinned_clients() const {
+  std::vector<std::string> pinned_clients;
+  pinned_clients.reserve(_pinned_clients.size());
   for (const auto& [key, value] : _pinned_clients) {
-    clients_to_unpin.push_back(key);
+    pinned_clients.push_back(key);
   }
-  for (const auto& client : clients_to_unpin) {
-    unpin_client(client, processed_at);
-  }
+  return pinned_clients;
 }
+

@@ -1,7 +1,7 @@
 #include "client_registry.hpp"
 
 bool ClientRegistry::has_client(const std::string& client_name) {
-  return _arrived_clients.find(client_name) == _arrived_clients.end();
+  return _arrived_clients.find(client_name) != _arrived_clients.end();
 }
 
 void ClientRegistry::add_client(const std::string& client_name) {
