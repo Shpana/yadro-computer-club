@@ -3,4 +3,11 @@ add_library(yadro_computer_club_lib
         validation.cpp
         validation.hpp
         times.cpp
+        events/event_handler.hpp
+        events/event.hpp
+        events/context.hpp
+        registries/client_registry.hpp
+        registries/client_registry.cpp
+        registries/table_registry.hpp
+        registries/table_registry.cpp
 )
