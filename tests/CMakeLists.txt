@@ -5,11 +5,15 @@ FetchContent_Declare(gtest
 )
 FetchContent_MakeAvailable(gtest)
 
-add_executable(run_tests validation_tests.cpp)
+add_executable(run_tests validation_tests.cpp
+        computer_club_tests.cpp)
 target_include_directories(run_tests
         PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
 target_link_libraries(run_tests
         PUBLIC yadro_computer_club_lib
         PUBLIC GTest::gtest_main
+)
+target_compile_definitions(run_tests
+        PUBLIC STATIC_FILES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/static"
 )

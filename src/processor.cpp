@@ -38,6 +38,17 @@ void Processor::run() {
   }
 }
 
+template<class TEvent>
+void Processor::process_event(const TEvent& event) {
+  _output << serialize_event(event) << '\n';
+  auto result = _handler->handle<TEvent>(event);
+
+  if (!result.is_ok) {
+    auto error_event = ErrorEvent{13, result.created_at, result.message};
+    process_event(error_event);
+  }
+}
+
 void Processor::_process_events() {
   std::string line;
   while (std::getline(_input, line)) {
@@ -73,16 +84,5 @@ void Processor::_process_event_line(const std::string& line) {
       std::cerr << "Unexpected event id" << std::endl;
       return;
     }
-  }
-}
-
-template<class TEvent>
-void Processor::process_event(const TEvent& event) {
-  auto result = _handler->handle<TEvent>(event);
-  _output << serialize_event(event) << '\n';
-
-  if (!result.is_ok) {
-    auto error_event = ErrorEvent{13, result.created_at, result.message};
-    process_event(error_event);
   }
 }
