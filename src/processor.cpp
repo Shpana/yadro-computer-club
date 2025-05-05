@@ -2,7 +2,7 @@
 
 #include "io/parsing.hpp"
 #include "io/serializing.hpp"
-#include "io/utils/times.hpp"
+#include "io/utils/time_converts.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -16,7 +16,7 @@ Processor::Processor(const Context& context, std::istream& input, std::ostream& 
 }
 
 void Processor::run() {
-  _output << to_string_time(_context.start_time) << '\n';
+  _output << time_to_string(_context.start_time) << '\n';
   _process_events();
 
   auto clients_to_input = _table_registry->get_all_pinned_clients();
@@ -28,13 +28,13 @@ void Processor::run() {
     process_event(event);
   }
 
-  _output << to_string_time(_context.end_time) << '\n';
+  _output << time_to_string(_context.end_time) << '\n';
 
   auto report = _accountant->prepare_report(_context.price_per_hour);
   for (auto [key, value]: report) {
     _output << key << ' '
             << value.revenue << ' '
-            << to_string_time(value.occupied_time) << '\n';
+            << time_to_string(value.occupied_time) << '\n';
   }
 }
 

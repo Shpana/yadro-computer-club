@@ -3,11 +3,18 @@
 
 #include "src/io/parsing.hpp"
 #include "src/processor.hpp"
-#include "src/validations/validation.hpp"
+
+#include "src/validations/validation_pipeline.hpp"
+#include "validations/steps/context_validation.hpp"
+#include "validations/steps/events_validation.hpp"
 
 void handle_computer_club(
     std::istream& input, std::ostream& output) {
-  if (!is_valid(input, output))
+  auto pipeline = ValidationPipeline(input, output);
+  pipeline.add_step(std::make_shared<ContextValidationStep>());
+  pipeline.add_step(std::make_shared<EventsValidationStep>());
+
+  if (!pipeline.run())
     return;
 
   input.clear();

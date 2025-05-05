@@ -1,8 +1,6 @@
 add_library(yadro_computer_club_lib
-        io/utils/times.hpp
-        validations/validation.cpp
-        validations/validation.hpp
-        io/utils/times.cpp
+        io/utils/time_converts.hpp
+        io/utils/time_converts.cpp
         events/event_handler.hpp
         events/event.hpp
         events/context.hpp
@@ -19,6 +17,12 @@ add_library(yadro_computer_club_lib
         io/serializing.hpp
         io/parsing.cpp
         io/serializing.cpp
+        validations/validation_pipeline.hpp
+        validations/validation_pipeline.cpp
+        validations/steps/context_validation.hpp
+        validations/steps/events_validation.hpp
+        validations/steps/context_validation.cpp
+        validations/steps/events_validation.cpp
 )
 target_include_directories(yadro_computer_club_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

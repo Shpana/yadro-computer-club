@@ -1,9 +1,9 @@
-#include "times.hpp"
+#include "time_converts.hpp"
 
 #include <iomanip>
 #include <sstream>
 
-time_t to_time(const std::string& time) {
+time_t string_to_time(const std::string& time) {
   std::stringstream ss{time};
   std::string tmp;
 
@@ -14,7 +14,7 @@ time_t to_time(const std::string& time) {
   return 60 * h + m;
 }
 
-std::string to_string_time(time_t time) {
+std::string time_to_string(time_t time) {
   std::stringstream ss;
   time_t h = time / 60,
          m = time - 60 * h;
