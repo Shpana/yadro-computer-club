@@ -18,6 +18,9 @@ struct ClientArrivedEvent : public Event {
   std::string client_name;
 
   ClientArrivedEvent(size_t _id, time_t _created_at,
+                     const std::string& _client_name)
+      : Event(_id, _created_at), client_name(_client_name) {}
+  ClientArrivedEvent(size_t _id, time_t _created_at,
                      std::string&& _client_name)
       : Event(_id, _created_at), client_name(std::move(_client_name)) {}
 };

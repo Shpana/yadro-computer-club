@@ -21,7 +21,7 @@ namespace {
     oss << '$';
     return std::regex_match(line, std::regex(oss.str()));
   }
-}
+}// namespace
 
 ValidationResult ContextValidationStep::validate(std::istream& input) {
   std::string line;

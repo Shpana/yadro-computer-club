@@ -22,7 +22,7 @@ void Accountant::account_unpin(size_t table_id, time_t processed_at) {
 }
 
 std::map<size_t, Accountant::ReportItem> Accountant::prepare_report(
-    size_t price_per_hour) {
+    size_t price_per_hour) const {
   std::map<size_t, Accountant::ReportItem> report;
   for (const auto& [key, statistic]: _statistics) {
     report[key] = {

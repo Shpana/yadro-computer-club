@@ -3,7 +3,7 @@
 
 template<class TEvent>
 EventResult EventHandler::handle(const TEvent& event) {
-  return EventResult{true};
+  throw std::runtime_error("Not implemented!");
 }
 
 template<>
@@ -50,7 +50,6 @@ EventResult EventHandler::handle<ClientWaitingEvent>(
     return EventResult{false, "ICanWaitNoLonger!", event.created_at};
   }
   if (_client_registry->get_waiters_count() > _context.tables_count) {
-    // TODO: Produce event
     _processor->process_event(
         ClientLeftEvent{11, event.created_at, client_name});
 
@@ -82,7 +81,6 @@ EventResult EventHandler::handle<ClientLeftEvent>(
     _table_registry->unpin_client(client_name, event.created_at);
 
     if (_client_registry->has_any_waiter()) {
-      // TODO: Produce event
       const auto& waiter = _client_registry->pop_first_waiter();
       _table_registry->pin_client(waiter, table_id, event.created_at);
 
