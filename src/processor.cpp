@@ -19,9 +19,9 @@ void Processor::run() {
   _output << time_to_string(_context.start_time) << '\n';
   _process_events();
 
-  auto clients_to_input = _table_registry->get_all_pinned_clients();
-  std::sort(clients_to_input.begin(), clients_to_input.end());
-  for (const auto& client: clients_to_input) {
+  auto client_to_unpin = _table_registry->get_all_pinned_clients();
+  std::sort(client_to_unpin.begin(), client_to_unpin.end());
+  for (const auto& client: client_to_unpin) {
     _table_registry->unpin_client(client, _context.end_time);
 
     auto event = ClientLeftEvent{11, _context.end_time, client};

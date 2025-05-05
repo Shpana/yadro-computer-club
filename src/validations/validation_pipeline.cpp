@@ -5,7 +5,7 @@ ValidationPipeline::ValidationPipeline(
     : _input(input), _output(output) {}
 
 bool ValidationPipeline::run() {
-  for (const auto& step : _steps) {
+  for (const auto& step: _steps) {
     auto result = step->validate(_input);
 
     if (!result.is_ok && result.line_with_error.has_value()) {

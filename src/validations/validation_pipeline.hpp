@@ -1,10 +1,10 @@
 #ifndef YADRO_COMPUTER_CLUB_VALIDATION_PIPELINE_HPP
 #define YADRO_COMPUTER_CLUB_VALIDATION_PIPELINE_HPP
 
-#include <memory>
-#include <vector>
 #include <iostream>
+#include <memory>
 #include <optional>
+#include <vector>
 
 struct ValidationResult {
   bool is_ok;
@@ -24,6 +24,7 @@ public:
 
   bool run();
   void add_step(const std::shared_ptr<ValidationStep>& step);
+
 private:
   std::istream& _input;
   std::ostream& _output;

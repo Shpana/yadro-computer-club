@@ -50,7 +50,6 @@ std::string serialize_event(const ClientLeftEvent& event) {
   return oss.str();
 }
 
-
 template<>
 std::string serialize_event(const ErrorEvent& event) {
   std::ostringstream oss;

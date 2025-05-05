@@ -66,7 +66,7 @@ namespace {
       oss << '$';
       return oss.str();
     }
-  }
+  }// namespace regex
 
   bool valid_event_line(const std::string& line) {
     std::ostringstream oss;
@@ -83,7 +83,7 @@ namespace {
     oss << '$';
     return std::regex_match(line, std::regex(oss.str()));
   }
-}
+}// namespace
 
 ValidationResult EventsValidationStep::validate(std::istream& input) {
   std::string line;
