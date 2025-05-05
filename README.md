@@ -2,6 +2,8 @@
 
 ## Overview
 
+![](assets/arthitecture-overview.png)
+
 Data validation was implemented through the `ValidationPipeline & ValidationStep` abstraction. 
 At each validation step, the correctness of the data is checked using regular expressions.
 
