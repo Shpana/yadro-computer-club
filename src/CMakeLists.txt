@@ -21,6 +21,11 @@ add_library(yadro_computer_club_lib
 
         root.cpp
         root.hpp
+
+        validations/validation_pipeline.cpp
+        validations/validation_pipeline.hpp
+        validations/steps/validate_format.hpp
+        validations/steps/validate_content.hpp
 )
 target_include_directories(yadro_computer_club_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

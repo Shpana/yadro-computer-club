@@ -14,9 +14,9 @@ TEST(validation, correct) {
   input << "02:00 1 roman";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_TRUE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_TRUE(pipeline.Validate());
 }
 
 TEST(validation, time_not_inc) {
@@ -28,9 +28,9 @@ TEST(validation, time_not_inc) {
   input << "00:00 1 roman\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -45,9 +45,9 @@ TEST(validation, table_number_out_of_range) {
   input << "00:00 2 roman 2\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -62,9 +62,9 @@ TEST(validation, event_id_out_of_range) {
   input << "00:00 5 roman\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -79,9 +79,9 @@ TEST(validation, invalid_username) {
   input << "00:00 1 roman:roman\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -96,9 +96,9 @@ TEST(validation, invalid_event_body_1) {
   input << "00:00 1 roman 1\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -113,9 +113,9 @@ TEST(validation, invalid_event_body_2) {
   input << "00:00 2 roman\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -130,9 +130,9 @@ TEST(validation, invalid_event_body_3) {
   input << "00:00 3 roman 1\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);
@@ -148,9 +148,9 @@ TEST(validation, invalid_event_body_4) {
   input << "00:00 4 roman 1\n";
 
   auto pipeline = ValidationPipeline(input, output);
-  pipeline.add_step(std::make_shared<ContextValidationStep>());
-  pipeline.add_step(std::make_shared<EventsValidationStep>());
-  EXPECT_FALSE(pipeline.run());
+  pipeline.AddStep(std::make_shared<ContextValidationStep>());
+  pipeline.AddStep(std::make_shared<EventsValidationStep>());
+  EXPECT_FALSE(pipeline.Validate());
 
   std::string expected_line;
   std::getline(output, expected_line);

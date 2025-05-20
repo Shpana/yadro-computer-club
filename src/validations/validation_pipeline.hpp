@@ -6,29 +6,33 @@
 #include <optional>
 #include <vector>
 
-struct ValidationResult {
-  bool is_ok;
-  std::optional<std::string> line_with_error;
-};
+namespace ComputerClub::Validation {
+  struct ValidationResult {
+    bool is_ok{false};
+    std::optional<std::string> line_with_error{std::nullopt};
+  };
 
-class ValidationStep {
-public:
-  ~ValidationStep() = default;
+  class ValidationStep {
+  public:
+    virtual ~ValidationStep() = default;
+    virtual auto Validate(std::istream& input) -> ValidationResult = 0;
+  };
 
-  virtual ValidationResult validate(std::istream& input) = 0;
-};
+  class ValidationPipeline {
+  public:
+    static auto CreateWithBasicSteps(std::istream& is)
+        -> ValidationPipeline;
 
-class ValidationPipeline {
-public:
-  ValidationPipeline(std::istream& input, std::ostream& output);
+    auto Validate() -> ValidationResult;
+    auto AddStep(std::shared_ptr<ValidationStep>&& step) -> void;
 
-  bool run();
-  void add_step(const std::shared_ptr<ValidationStep>& step);
+  private:
+    ValidationPipeline(std::istream& is) : is_(is) {}
 
-private:
-  std::istream& _input;
-  std::ostream& _output;
-  std::vector<std::shared_ptr<ValidationStep>> _steps;
-};
+  private:
+    std::istream& is_;
+    std::vector<std::shared_ptr<ValidationStep>> steps_;
+  };
+}// namespace ComputerClub::Validation
 
 #endif// YADRO_COMPUTER_CLUB_VALIDATION_PIPELINE_HPP

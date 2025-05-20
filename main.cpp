@@ -2,16 +2,28 @@
 #include <iostream>
 
 #include "src/io/parsing.hpp"
+#include "validations/validation_pipeline.hpp"
 #include "root.hpp"
 
-auto RunComputerClub(
-    std::istream& input, std::ostream& output) -> void {
-  auto spec = ComputerClub::IO::ParseSpec(input);
-  auto root = ComputerClub::Root(input, output, spec);
+using namespace ComputerClub;
+
+auto RunComputerClub(std::istream& input, std::ostream& output) -> void {
+  auto pipeline =
+      Validation::ValidationPipeline::CreateWithBasicSteps(input);
+  auto result = pipeline.Validate();
+  if (!result.is_ok) {
+    if (result.line_with_error.has_value()) {
+      output << result.line_with_error.value();
+      return;
+    }
+  }
+
+  auto spec = IO::ParseSpec(input);
+  auto root = Root(input, output, spec);
   root.Run();
 }
 
-int main(int argc, char* argv[]) {
+auto main(int argc, char* argv[]) -> int {
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <input_file>" << std::endl;
     return 1;
