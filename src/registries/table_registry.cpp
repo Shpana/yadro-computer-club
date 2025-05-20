@@ -2,54 +2,49 @@
 
 #include <vector>
 
-TableRegistry::TableRegistry(size_t tables_count,
-                             const std::shared_ptr<Accountant>& accountant)
-    : _tables_count(tables_count), _accountant(accountant) {
-  for (size_t id = 1; id <= _tables_count; ++id) {
-    _available_tables.insert(id);
+namespace ComputerClub::Registries {
+  TableRegistry::TableRegistry(size_t tables_count) {
+    for (auto id = 1; id <= tables_count; ++id) {
+      free_tables_.insert(id);
+    }
   }
-}
 
-bool TableRegistry::has_available_tables() {
-  return !_available_tables.empty();
-}
-
-bool TableRegistry::is_table_available(size_t table_id) {
-  return _available_tables.find(table_id) != _available_tables.end();
-}
-
-bool TableRegistry::is_client_pinned(const std::string& client_name) {
-  return _pinned_clients.find(client_name) != _pinned_clients.end();
-}
-
-void TableRegistry::pin_client(
-    const std::string& client_name,
-    size_t table_id, time_t processed_at) {
-  if (is_client_pinned(client_name)) {
-    unpin_client(client_name, processed_at);
+  auto TableRegistry::Pin(const std::string& client_name, size_t table_id) -> void {
+    if (IsClientPinned(client_name)) {
+      Unpin(client_name);
+    }
+    free_tables_.erase(table_id);
+    pinned_clients_[client_name] = table_id;
   }
-  _available_tables.erase(table_id);
-  _pinned_clients[client_name] = table_id;
-  _accountant->account_pin(table_id, processed_at);
-}
 
-void TableRegistry::unpin_client(
-    const std::string& client_name, time_t processed_at) {
-  size_t table_id = _pinned_clients[client_name];
-  _available_tables.insert(table_id);
-  _pinned_clients.erase(client_name);
-  _accountant->account_unpin(table_id, processed_at);
-}
-
-size_t TableRegistry::get_pinned_table(const std::string& client_name) const {
-  return _pinned_clients.at(client_name);
-}
-
-std::vector<std::string> TableRegistry::get_all_pinned_clients() const {
-  std::vector<std::string> pinned_clients;
-  pinned_clients.reserve(_pinned_clients.size());
-  for (const auto& [key, value]: _pinned_clients) {
-    pinned_clients.push_back(key);
+  auto TableRegistry::Unpin(const std::string& client_name) -> void {
+    auto table_id = pinned_clients_[client_name];
+    free_tables_.insert(table_id);
+    pinned_clients_.erase(client_name);
   }
-  return pinned_clients;
-}
+
+  auto TableRegistry::HasFreeTables() const -> bool {
+    return !free_tables_.empty();
+  }
+
+  auto TableRegistry::IsTableFree(size_t table_id) const -> bool {
+    return free_tables_.find(table_id) != free_tables_.end();
+  }
+
+  auto TableRegistry::IsClientPinned(const std::string& client_name) const -> bool {
+    return pinned_clients_.find(client_name) != pinned_clients_.end();
+  }
+
+  auto TableRegistry::GetPinnedTable(const std::string& client_name) const -> size_t {
+    return pinned_clients_.at(client_name);
+  }
+
+  auto TableRegistry::GetAllPinnedClients() const -> std::vector<std::string> {
+    std::vector<std::string> pinned_clients;
+    pinned_clients.reserve(pinned_clients_.size());
+    for (const auto& [key, value]: pinned_clients_) {
+      pinned_clients.push_back(key);
+    }
+    return pinned_clients;
+  }
+}// namespace ComputerClub::Registries

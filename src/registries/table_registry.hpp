@@ -9,25 +9,25 @@
 #include <string>
 #include <vector>
 
-class TableRegistry {
-public:
-  TableRegistry(size_t tables_count,
-                const std::shared_ptr<Accountant>& accountant);
+namespace ComputerClub::Registries {
+  class TableRegistry {
+  public:
+    TableRegistry(size_t tables_count);
 
-  bool has_available_tables();
-  bool is_table_available(size_t table_id);
-  bool is_client_pinned(const std::string& client_name);
+    auto Pin(const std::string& client_name, size_t table_id) -> void;
+    auto Unpin(const std::string& client_name) -> void;
 
-  void pin_client(const std::string& client_name, size_t table_id, time_t processed_at);
-  void unpin_client(const std::string& client_name, time_t processed_at);
-  [[nodiscard]] size_t get_pinned_table(const std::string& client_name) const;
-  [[nodiscard]] std::vector<std::string> get_all_pinned_clients() const;
+    [[nodiscard]] auto HasFreeTables() const -> bool;
+    [[nodiscard]] auto IsTableFree(size_t table_id) const -> bool;
 
-private:
-  std::shared_ptr<Accountant> _accountant;
-  size_t _tables_count;
-  std::set<size_t> _available_tables;
-  std::map<std::string, size_t> _pinned_clients;
-};
+    [[nodiscard]] auto IsClientPinned(const std::string& client_name) const -> bool;
+    [[nodiscard]] auto GetPinnedTable(const std::string& client_name) const -> size_t;
+    [[nodiscard]] auto GetAllPinnedClients() const -> std::vector<std::string>;
+
+  private:
+    std::set<size_t> free_tables_;
+    std::map<std::string, size_t> pinned_clients_;
+  };
+}// namespace ComputerClub::Registries
 
 #endif// YADRO_COMPUTER_CLUB_TABLE_REGISTRY_HPP

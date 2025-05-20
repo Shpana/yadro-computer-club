@@ -91,7 +91,7 @@ ValidationResult EventsValidationStep::validate(std::istream& input) {
 
   input.clear();
   input.seekg(0);
-  Context context = parse_context(input);
+  ContextDepr context = parse_context(input);
 
   while (std::getline(input, line)) {
     if (!valid_event_line(line)) {

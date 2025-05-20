@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 
-#include "validations/validation_pipeline.hpp"
-#include "validations/steps/events_validation.hpp"
 #include "validations/steps/context_validation.hpp"
+#include "validations/steps/events_validation.hpp"
+#include "validations/validation_pipeline.hpp"
 
 TEST(validation, correct) {
   std::stringstream input, output;

@@ -1,31 +1,33 @@
 #include "client_registry.hpp"
 
-bool ClientRegistry::has_client(const std::string& client_name) {
-  return _arrived_clients.find(client_name) != _arrived_clients.end();
-}
+namespace ComputerClub::Registries {
+  auto ClientRegistry::AddClient(const std::string& client_name) -> void {
+    arrived_clients_.insert(client_name);
+  }
 
-void ClientRegistry::add_client(const std::string& client_name) {
-  _arrived_clients.insert(client_name);
-}
+  auto ClientRegistry::RemoveClient(const std::string& client_name) -> void {
+    arrived_clients_.erase(client_name);
+  }
 
-void ClientRegistry::remove_client(const std::string& client_name) {
-  _arrived_clients.erase(client_name);
-}
+  auto ClientRegistry::HasClient(const std::string& client_name) const -> bool {
+    return arrived_clients_.find(client_name) != arrived_clients_.end();
+  }
 
-bool ClientRegistry::has_any_waiter() {
-  return !_waiting_clients_queue.empty();
-}
+  auto ClientRegistry::AddWaiter(const std::string& client_name) -> void {
+    waiting_clients_queue_.push(client_name);
+  }
 
-void ClientRegistry::add_waiter(const std::string& client_name) {
-  _waiting_clients_queue.push(client_name);
-}
+  auto ClientRegistry::RemoveFirstWaiter() -> std::string {
+    std::string client_name = waiting_clients_queue_.front();
+    waiting_clients_queue_.pop();
+    return client_name;
+  }
 
-std::string ClientRegistry::pop_first_waiter() {
-  std::string client_name = _waiting_clients_queue.front();
-  _waiting_clients_queue.pop();
-  return client_name;
-}
+  auto ClientRegistry::HasAnyWaiter() const -> bool {
+    return !waiting_clients_queue_.empty();
+  }
 
-size_t ClientRegistry::get_waiters_count() const {
-  return _waiting_clients_queue.size();
-}
+  auto ClientRegistry::waiters_count() const -> size_t {
+    return waiting_clients_queue_.size();
+  }
+}// namespace ComputerClub::Registries

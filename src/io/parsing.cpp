@@ -1,76 +1,74 @@
 #include "parsing.hpp"
 
-#include "events/event.hpp"
 #include "io/utils/time_converts.hpp"
 
-Context parse_context(std::istream& input) {
-  Context context;
+namespace ComputerClub::IO {
+  auto ParseSpec(std::istream& is) -> Events::Context::Spec {
+    Events::Context::Spec spec{};
 
-  std::string line;
-  std::getline(input, line);
-  context.tables_count = std::stoi(line);
+    std::string line;
+    std::getline(is, line);
+    spec.tables_count = std::stoi(line);
 
-  std::getline(input, line);
-  std::istringstream iss{line};
-  std::string raw_start_time, raw_end_time;
-  iss >> raw_start_time >> raw_end_time;
-  context.start_time = string_to_time(raw_start_time);
-  context.end_time = string_to_time(raw_end_time);
+    std::getline(is, line);
+    std::istringstream iss{line};
+    std::string raw_start_time, raw_end_time;
+    iss >> raw_start_time >> raw_end_time;
+    spec.start_time = string_to_time(raw_start_time);
+    spec.end_time = string_to_time(raw_end_time);
 
-  std::getline(input, line);
-  context.price_per_hour = std::stoi(line);
-  return context;
-}
+    std::getline(is, line);
+    spec.price_per_hour = std::stoi(line);
+    return spec;
+  }
 
-size_t parse_event_id_from_line(const std::string& line) {
-  std::istringstream iss{line};
+  auto ParseEventId(const std::string& line) -> size_t {
+    std::istringstream iss{line};
 
-  size_t event_id;
-  std::string irrelevant;
-  iss >> irrelevant >> event_id;
-  return event_id;
-}
+    size_t event_id;
+    std::string irrelevant;
+    iss >> irrelevant >> event_id;
+    return event_id;
+  }
 
-template<>
-ClientArrivedEvent parse_event_from_line(const std::string& line) {
-  std::istringstream iss{line};
+  auto ParseClientArrivedEvent(const std::string& line)
+      -> Events::ClientArrivedEvent {
+    std::istringstream iss{line};
 
-  size_t event_id;
-  std::string raw_created_at, client_name;
-  iss >> raw_created_at >> event_id >> client_name;
-  return ClientArrivedEvent{
-      event_id, string_to_time(raw_created_at), std::move(client_name)};
-}
+    size_t event_id;
+    std::string raw_created_at, client_name;
+    iss >> raw_created_at >> event_id >> client_name;
+    return Events::ClientArrivedEvent{std::move(client_name), string_to_time(raw_created_at)};
+  }
 
-template<>
-ClientTakeTableEvent parse_event_from_line(const std::string& line) {
-  std::istringstream iss{line};
+  auto ParseClientTakeTableEvent(const std::string& line)
+      -> Events::ClientTakeTableEvent {
+    std::istringstream iss{line};
 
-  size_t event_id, table_id;
-  std::string raw_created_at, client_name;
-  iss >> raw_created_at >> event_id >> client_name >> table_id;
-  return ClientTakeTableEvent{
-      event_id, string_to_time(raw_created_at), std::move(client_name), table_id};
-}
 
-template<>
-ClientWaitingEvent parse_event_from_line(const std::string& line) {
-  std::istringstream iss{line};
+    size_t event_id, table_id;
+    std::string raw_created_at, client_name;
+    iss >> raw_created_at >> event_id >> client_name >> table_id;
+    return Events::ClientTakeTableEvent{std::move(client_name), table_id, string_to_time(raw_created_at)};
+  }
 
-  size_t event_id;
-  std::string raw_created_at, client_name;
-  iss >> raw_created_at >> event_id >> client_name;
-  return ClientWaitingEvent{
-      event_id, string_to_time(raw_created_at), std::move(client_name)};
-}
+  auto ParseClientWaitingEvent(const std::string& line)
+      -> Events::ClientWaitingEvent {
+    std::istringstream iss{line};
 
-template<>
-ClientLeftEvent parse_event_from_line(const std::string& line) {
-  std::istringstream iss{line};
+    size_t event_id;
+    std::string raw_created_at, client_name;
+    iss >> raw_created_at >> event_id >> client_name;
+    return Events::ClientWaitingEvent{std::move(client_name), string_to_time(raw_created_at)};
+  }
 
-  size_t event_id;
-  std::string raw_created_at, client_name;
-  iss >> raw_created_at >> event_id >> client_name;
-  return ClientLeftEvent{
-      event_id, string_to_time(raw_created_at), std::move(client_name)};
-}
+  auto ParseClientLeftEvent(const std::string& line)
+      -> Events::ClientLeftEvent {
+    std::istringstream iss{line};
+
+    size_t event_id;
+    std::string raw_created_at, client_name;
+    iss >> raw_created_at >> event_id >> client_name;
+    return Events::ClientLeftEvent{std::move(client_name), string_to_time(raw_created_at)};
+  }
+}// namespace ComputerClub::IO

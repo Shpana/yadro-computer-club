@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
 
 #include "io/parsing.hpp"
-#include "processor.hpp"
+#include "root.hpp"
 
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 
 namespace {
 #ifdef STATIC_FILES_PATH
   std::filesystem::path static_files_path{STATIC_FILES_PATH};
 #endif
-}
+}// namespace
 
 std::ostringstream load_expected_output(
     const std::filesystem::path& filepath) {
@@ -29,12 +29,12 @@ std::ostringstream load_expected_output(
 TEST(computer_club, demo) {
   std::fstream input;
   input.open(static_files_path / "input_1.txt", std::ios::in);
-
   std::ostringstream output;
 
-  auto context = parse_context(input);
-  auto processor = Processor(context, input, output);
-  processor.run();
+  auto spec = ComputerClub::IO::ParseSpec(input);
+  auto root = ComputerClub::Root(input, output, spec);
+  root.Run();
+
   input.close();
 
   auto expected =
@@ -48,9 +48,10 @@ TEST(computer_club, waiters_overflow) {
 
   std::ostringstream output;
 
-  auto context = parse_context(input);
-  auto processor = Processor(context, input, output);
-  processor.run();
+  auto spec = ComputerClub::IO::ParseSpec(input);
+  auto root = ComputerClub::Root(input, output, spec);
+  root.Run();
+
   input.close();
 
   auto expected =
@@ -64,9 +65,10 @@ TEST(computer_club, unknown_clients) {
 
   std::ostringstream output;
 
-  auto context = parse_context(input);
-  auto processor = Processor(context, input, output);
-  processor.run();
+  auto spec = ComputerClub::IO::ParseSpec(input);
+  auto root = ComputerClub::Root(input, output, spec);
+  root.Run();
+
   input.close();
 
   auto expected =
