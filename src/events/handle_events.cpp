@@ -1,6 +1,4 @@
-#include "events.hpp"
-
-#include "context.hpp"
+#include "handle_events.hpp"
 
 namespace ComputerClub::Events {
   auto HandleClientArrivedEvent(Context& context,

@@ -8,16 +8,7 @@
 
 #include <ctime>
 
-struct ContextDepr {
-  time_t start_time;
-  time_t end_time;
-  size_t tables_count;
-  size_t price_per_hour;
-};
-
 namespace ComputerClub::Events {
-  using Time = time_t;
-
   class Context {
   public:
     struct Spec {

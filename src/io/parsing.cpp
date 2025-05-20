@@ -45,7 +45,6 @@ namespace ComputerClub::IO {
       -> Events::ClientTakeTableEvent {
     std::istringstream iss{line};
 
-
     size_t event_id, table_id;
     std::string raw_created_at, client_name;
     iss >> raw_created_at >> event_id >> client_name >> table_id;
