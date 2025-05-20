@@ -8,8 +8,7 @@
 using namespace ComputerClub;
 
 auto RunComputerClub(std::istream& input, std::ostream& output) -> void {
-  auto pipeline =
-      Validation::ValidationPipeline::CreateWithBasicSteps(input);
+  auto pipeline = Validation::ValidationPipeline::CreateWithBasicSteps(input);
   auto result = pipeline.Validate();
   if (!result.is_ok) {
     if (result.line_with_error.has_value()) {

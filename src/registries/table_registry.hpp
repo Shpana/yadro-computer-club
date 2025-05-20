@@ -1,8 +1,6 @@
 #ifndef YADRO_COMPUTER_CLUB_TABLE_REGISTRY_HPP
 #define YADRO_COMPUTER_CLUB_TABLE_REGISTRY_HPP
 
-#include "accountant.hpp"
-
 #include <map>
 #include <memory>
 #include <set>

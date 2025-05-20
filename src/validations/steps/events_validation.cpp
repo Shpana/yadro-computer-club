@@ -4,140 +4,127 @@
 
 #include <regex>
 
-namespace {
-  namespace regex {
-    std::string correct_time_format = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
-    std::string correct_client_name = "[a-z0-9_-]+";
-    std::string correct_positive_int = "[1-9][0-9]*";
+namespace ComputerClub::Validation {
+  namespace {
+    const std::string kTimeRegex = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
+    const std::string kPositiveIntegerRegex = "[1-9][0-9]*";
+    const std::string kClientNameRegex = "[a-z0-9_-]+";
+  }// namespace
 
-    template<class TEvent>
-    [[nodiscard]] std::string get_event_regex_str();
+  static auto GetClientArrivedEventRegex() -> std::string {
+    std::ostringstream oss;
+    oss << '^';
+    oss << kTimeRegex;
+    oss << ' ';
+    oss << '1';
+    oss << ' ';
+    oss << kClientNameRegex;
+    oss << '$';
+    return oss.str();
+  }
 
-    template<>
-    [[nodiscard]] std::string get_event_regex_str<ClientArrivedEvent>() {
-      std::ostringstream oss;
-      oss << '^';
-      oss << correct_time_format;
-      oss << ' ';
-      oss << '1';
-      oss << ' ';
-      oss << correct_client_name;
-      oss << '$';
-      return oss.str();
-    }
+  static auto GetClientTakeTableEventRegex() -> std::string {
+    std::ostringstream oss;
+    oss << '^';
+    oss << kTimeRegex;
+    oss << ' ';
+    oss << '2';
+    oss << ' ';
+    oss << kClientNameRegex;
+    oss << ' ';
+    oss << kPositiveIntegerRegex;
+    oss << '$';
+    return oss.str();
+  }
 
-    template<>
-    [[nodiscard]] std::string get_event_regex_str<ClientTakeTableEvent>() {
-      std::ostringstream oss;
-      oss << '^';
-      oss << correct_time_format;
-      oss << ' ';
-      oss << '2';
-      oss << ' ';
-      oss << correct_client_name;
-      oss << ' ';
-      oss << correct_positive_int;
-      oss << '$';
-      return oss.str();
-    }
+  static auto GetClientWaitingEventRegex() -> std::string {
+    std::ostringstream oss;
+    oss << '^';
+    oss << kTimeRegex;
+    oss << ' ';
+    oss << '3';
+    oss << ' ';
+    oss << kClientNameRegex;
+    oss << '$';
+    return oss.str();
+  }
 
-    template<>
-    [[nodiscard]] std::string get_event_regex_str<ClientWaitingEvent>() {
-      std::ostringstream oss;
-      oss << '^';
-      oss << correct_time_format;
-      oss << ' ';
-      oss << '3';
-      oss << ' ';
-      oss << correct_client_name;
-      oss << '$';
-      return oss.str();
-    }
+  static auto GetClientLeftEventRegex() -> std::string {
+    std::ostringstream oss;
+    oss << '^';
+    oss << kTimeRegex;
+    oss << ' ';
+    oss << '4';
+    oss << ' ';
+    oss << kClientNameRegex;
+    oss << '$';
+    return oss.str();
+  }
 
-    template<>
-    [[nodiscard]] std::string get_event_regex_str<ClientLeftEvent>() {
-      std::ostringstream oss;
-      oss << '^';
-      oss << correct_time_format;
-      oss << ' ';
-      oss << '4';
-      oss << ' ';
-      oss << correct_client_name;
-      oss << '$';
-      return oss.str();
-    }
-  }// namespace regex
-
-  bool valid_event_line(const std::string& line) {
+  static auto IsValidEventLine(const std::string& line) -> bool {
     std::ostringstream oss;
     oss << '^';
     oss << '(';
-    oss << regex::get_event_regex_str<ClientArrivedEvent>();
+    oss << GetClientArrivedEventRegex();
     oss << '|';
-    oss << regex::get_event_regex_str<ClientTakeTableEvent>();
+    oss << GetClientTakeTableEventRegex();
     oss << '|';
-    oss << regex::get_event_regex_str<ClientWaitingEvent>();
+    oss << GetClientWaitingEventRegex();
     oss << '|';
-    oss << regex::get_event_regex_str<ClientLeftEvent>();
+    oss << GetClientLeftEventRegex();
     oss << ')';
     oss << '$';
     return std::regex_match(line, std::regex(oss.str()));
   }
-}// namespace
 
-ValidationResult EventsValidationStep::validate(std::istream& input) {
-  std::string line;
-  time_t previous_created_at = 0;
+  ValidationResult EventsValidationStep::Validate(std::istream& input) {
+    input.clear();
+    input.seekg(0);
 
-  input.clear();
-  input.seekg(0);
-  ContextDepr context = parse_context(input);
+    std::string line;
+    Events::Context::Spec spec = IO::ParseSpec(input);
+    time_t previous_created_at = 0;
 
-  while (std::getline(input, line)) {
-    if (!valid_event_line(line)) {
-      return {false, line};
+    while (std::getline(input, line)) {
+      if (!IsValidEventLine(line))
+        return ValidationResult{.is_ok = false, .line_with_error = line};
+
+      auto event_id = IO::ParseEventId(line);
+      switch (event_id) {
+        case 1: {
+          auto event = IO::ParseClientArrivedEvent(line);
+          if (event.created_at < previous_created_at)
+            return ValidationResult{.is_ok = false, .line_with_error = line};
+          previous_created_at = event.created_at;
+          break;
+        }
+        case 2: {
+          auto event = IO::ParseClientTakeTableEvent(line);
+          if (event.created_at < previous_created_at)
+            return ValidationResult{.is_ok = false, .line_with_error = line};
+          if (!(1 <= event.table_id && event.table_id <= spec.tables_count))
+            return ValidationResult{.is_ok = false, .line_with_error = line};
+          previous_created_at = event.created_at;
+          break;
+        }
+        case 3: {
+          auto event = IO::ParseClientWaitingEvent(line);
+          if (event.created_at < previous_created_at)
+            return ValidationResult{.is_ok = false, .line_with_error = line};
+          previous_created_at = event.created_at;
+          break;
+        }
+        case 4: {
+          auto event = IO::ParseClientLeftEvent(line);
+          if (event.created_at < previous_created_at)
+            return ValidationResult{.is_ok = false, .line_with_error = line};
+          previous_created_at = event.created_at;
+          break;
+        }
+        default:
+          break;
+      }
     }
-
-    auto event_id = parse_event_id_from_line(line);
-    switch (event_id) {
-      case 1: {
-        auto event = parse_event_from_line<ClientArrivedEvent>(line);
-        if (event.created_at < previous_created_at) {
-          return {false, line};
-        }
-        previous_created_at = event.created_at;
-        break;
-      }
-      case 2: {
-        auto event = parse_event_from_line<ClientTakeTableEvent>(line);
-        if (event.created_at < previous_created_at) {
-          return {false, line};
-        }
-        previous_created_at = event.created_at;
-        if (!(1 <= event.table_id && event.table_id <= context.tables_count)) {
-          return {false, line};
-        }
-        break;
-      }
-      case 3: {
-        auto event = parse_event_from_line<ClientWaitingEvent>(line);
-        if (event.created_at < previous_created_at) {
-          return {false, line};
-        }
-        previous_created_at = event.created_at;
-        break;
-      }
-      case 4: {
-        auto event = parse_event_from_line<ClientLeftEvent>(line);
-        if (event.created_at < previous_created_at) {
-          return {false, line};
-        }
-        previous_created_at = event.created_at;
-        break;
-      }
-      default:
-        break;
-    }
+    return ValidationResult{.is_ok = true};
   }
-  return {true};
 }

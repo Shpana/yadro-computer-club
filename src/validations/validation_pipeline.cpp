@@ -1,14 +1,14 @@
 #include "validation_pipeline.hpp"
 
-#include "validations/steps/validate_content.hpp"
-#include "validations/steps/validate_format.hpp"
+#include "steps/context_validation.hpp"
+#include "steps/events_validation.hpp"
 
 namespace ComputerClub::Validation {
   auto ValidationPipeline::CreateWithBasicSteps(std::istream& is)
       -> ComputerClub::Validation::ValidationPipeline {
     auto pipeline = ValidationPipeline(is);
-    pipeline.AddStep(std::make_shared<FormatValidationStep>());
-    pipeline.AddStep(std::make_shared<ContentValidationStep>());
+    pipeline.AddStep(std::make_shared<ContextValidationStep>());
+    pipeline.AddStep(std::make_shared<EventsValidationStep>());
     return pipeline;
   }
 

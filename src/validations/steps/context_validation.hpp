@@ -3,9 +3,11 @@
 
 #include "validations/validation_pipeline.hpp"
 
-class ContextValidationStep : public ValidationStep {
-public:
-  ValidationResult validate(std::istream& input) override;
-};
+namespace ComputerClub::Validation {
+  class ContextValidationStep : public ValidationStep {
+  public:
+    auto Validate(std::istream& is) -> ValidationResult override;
+  };
+}
 
 #endif// YADRO_COMPUTER_CLUB_CONTEXT_VALIDATION_HPP

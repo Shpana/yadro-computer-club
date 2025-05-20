@@ -2,43 +2,48 @@
 
 #include <regex>
 
-namespace {
-  namespace regex {
-    std::string correct_time_format = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
-  }
+namespace ComputerClub::Validation {
+  namespace {
+    const std::string kTimeRegex = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
+    const std::string kPositiveIntegerRegex = "^[1-9][0-9]*$";
+  }// namespace
 
-  bool valid_positive_int(const std::string& line) {
-    auto pattern = std::regex("^[1-9][0-9]*$");
-    return std::regex_match(line, pattern);
-  }
-
-  bool valid_times_line(const std::string& line) {
+  static auto IsValidPositiveIntegerLine(const std::string& line) -> bool {
     std::ostringstream oss;
     oss << '^';
-    oss << regex::correct_time_format;
-    oss << ' ';
-    oss << regex::correct_time_format;
+    oss << kPositiveIntegerRegex;
     oss << '$';
     return std::regex_match(line, std::regex(oss.str()));
   }
-}// namespace
 
-ValidationResult ContextValidationStep::validate(std::istream& input) {
-  std::string line;
-
-  std::getline(input, line);
-  if (!valid_positive_int(line)) {
-    return {false, line};
+  static auto IsValidTimesLine(const std::string& line) -> bool {
+    std::ostringstream oss;
+    oss << '^';
+    oss << kTimeRegex;
+    oss << ' ';
+    oss << kTimeRegex;
+    oss << '$';
+    return std::regex_match(line, std::regex(oss.str()));
   }
 
-  std::getline(input, line);
-  if (!valid_times_line(line)) {
-    return {false, line};
-  }
+  auto ContextValidationStep::Validate(std::istream& input) -> ValidationResult {
+    std::string line;
 
-  std::getline(input, line);
-  if (!valid_positive_int(line)) {
-    return {false, line};
+    // Tables count line
+    std::getline(input, line);
+    if (!IsValidPositiveIntegerLine(line))
+      return ValidationResult{.is_ok = false, .line_with_error = line};
+
+    // Times line
+    std::getline(input, line);
+    if (!IsValidTimesLine(line))
+      return ValidationResult{.is_ok = false, .line_with_error = line};
+
+    // Table price per hour
+    std::getline(input, line);
+    if (!IsValidPositiveIntegerLine(line))
+      return ValidationResult{.is_ok = false, .line_with_error = line};
+
+    return ValidationResult{.is_ok = true};
   }
-  return {true};
 }
