@@ -17,6 +17,9 @@ auto RunComputerClub(std::istream& input, std::ostream& output) -> void {
     }
   }
 
+  input.clear();
+  input.seekg(0);
+
   auto spec = IO::ParseSpec(input);
   auto root = Root(input, output, spec);
   root.Run();
