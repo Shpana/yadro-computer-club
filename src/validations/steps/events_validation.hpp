@@ -8,6 +8,6 @@ namespace ComputerClub::Validation {
   public:
     auto Validate(std::istream& input) -> ValidationResult override;
   };
-}
+}// namespace ComputerClub::Validation
 
 #endif// YADRO_COMPUTER_CLUB_EVENTS_VALIDATION_HPP

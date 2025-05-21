@@ -6,9 +6,33 @@
 #include <algorithm>
 
 namespace ComputerClub {
+  namespace {
+    class RootConsumer final : public Events::EventConsumer {
+    public:
+      RootConsumer(std::ostream& os, Events::Context& context)
+          : os_(os), context_(context) {}
+
+#define COMPUTER_CLUB_EVENT_EXTERNAL(Id, Name)                      \
+  auto Consume(const Events::Name##Event& event) -> void override { \
+    os_ << IO::Serialize##Name##Event<Id>(event) << '\n';           \
+    Handle##Name##Event(context_, event);                           \
+  }
+#define COMPUTER_CLUB_EVENT_INTERNAL(Id, Name)                      \
+  auto Consume(const Events::Name##Event& event) -> void override { \
+    os_ << IO::Serialize##Name##Event<Id>(event) << '\n';           \
+    Handle##Name##Event(context_, event);                           \
+  }
+#include "events/events.def"
+
+    private:
+      std::ostream& os_;
+      Events::Context& context_;
+    };
+  }// namespace
+
   Root::Root(std::istream& is, std::ostream& os, const Events::Context::Spec& spec)
       : is_(is), os_(os), context_(spec,
-                                   this,
+                                   std::make_shared<RootConsumer>(os_, context_),
                                    std::make_shared<Registries::Accountant>(spec.tables_count),
                                    std::make_shared<Registries::ClientRegistry>(),
                                    std::make_shared<Registries::TableRegistry>(spec.tables_count)) {}
@@ -35,7 +59,7 @@ namespace ComputerClub {
 #define COMPUTER_CLUB_EVENT_EXTERNAL(Id, Name) \
   case Id: {                                   \
     auto event = IO::Parse##Name##Event(line); \
-    Consume(event);                            \
+    context_.consumer()->Consume(event);       \
     break;                                     \
   }
 #include "events/events.def"
@@ -52,7 +76,7 @@ namespace ComputerClub {
 
     for (const auto& client: client_to_unpin) {
       auto event = Events::ClientLeftInternalEvent{client, context_.end_time()};
-      Consume(event);
+      context_.consumer()->Consume(event);
     }
   }
 }// namespace ComputerClub

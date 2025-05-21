@@ -20,7 +20,7 @@ namespace ComputerClub::Events {
 
   public:
     Context(const Spec& spec,
-            EventConsumer* consumer,
+            std::shared_ptr<EventConsumer>&& consumer,
             std::shared_ptr<Registries::Accountant>&& accountant,
             std::shared_ptr<Registries::ClientRegistry>&& client_registry,
             std::shared_ptr<Registries::TableRegistry>&& table_registry)
@@ -35,19 +35,15 @@ namespace ComputerClub::Events {
     [[nodiscard]] auto tables_count() const -> size_t { return spec_.tables_count; }
     [[nodiscard]] auto price_per_hour() const -> size_t { return spec_.price_per_hour; }
 
-    [[nodiscard]] auto consumer() const -> EventConsumer* { return consumer_; }
-    [[nodiscard]] auto accountant() const
-        -> std::shared_ptr<Registries::Accountant> { return accountant_; }
-    [[nodiscard]] auto client_registry() const
-        -> std::shared_ptr<Registries::ClientRegistry> { return client_registry_; }
-    [[nodiscard]] auto table_registry() const
-        -> std::shared_ptr<Registries::TableRegistry> { return table_registry_; }
+    [[nodiscard]] auto consumer() const -> std::shared_ptr<EventConsumer> { return consumer_; }
+    [[nodiscard]] auto accountant() const -> std::shared_ptr<Registries::Accountant> { return accountant_; }
+    [[nodiscard]] auto client_registry() const -> std::shared_ptr<Registries::ClientRegistry> { return client_registry_; }
+    [[nodiscard]] auto table_registry() const -> std::shared_ptr<Registries::TableRegistry> { return table_registry_; }
 
   private:
     const Spec& spec_;
 
-    // TODO: make smart pointer
-    EventConsumer* consumer_;
+    std::shared_ptr<EventConsumer> consumer_;
     std::shared_ptr<Registries::Accountant> accountant_;
     std::shared_ptr<Registries::ClientRegistry> client_registry_;
     std::shared_ptr<Registries::TableRegistry> table_registry_;

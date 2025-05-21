@@ -11,22 +11,11 @@
 #include <iostream>
 
 namespace ComputerClub {
-  class Root : public Events::EventConsumer {
+  class Root {
   public:
     Root(std::istream& is, std::ostream& os, const Events::Context::Spec& spec);
     auto Run() -> void;
 
-#define COMPUTER_CLUB_EVENT_EXTERNAL(Id, Name)                      \
-  auto Consume(const Events::Name##Event& event) -> void override { \
-    os_ << IO::Serialize##Name##Event<Id>(event) << '\n';           \
-    Handle##Name##Event(context_, event);                           \
-  }
-#define COMPUTER_CLUB_EVENT_INTERNAL(Id, Name)                      \
-  auto Consume(const Events::Name##Event& event) -> void override { \
-    os_ << IO::Serialize##Name##Event<Id>(event) << '\n';           \
-    Handle##Name##Event(context_, event);                           \
-  }
-#include "events/events.def"
   private:
     auto ProcessDayCycle() -> void;
 

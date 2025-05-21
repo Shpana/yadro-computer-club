@@ -46,4 +46,4 @@ namespace ComputerClub::Validation {
 
     return ValidationResult{.is_ok = true};
   }
-}
+}// namespace ComputerClub::Validation
