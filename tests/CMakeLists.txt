@@ -6,8 +6,9 @@ FetchContent_Declare(gtest
 FetchContent_MakeAvailable(gtest)
 
 add_executable(run_tests
-        computer_club_tests.cpp
+        day_processing_tests.cpp
         validation_tests.cpp
+        utils/utils.hpp
 )
 target_include_directories(run_tests
         PUBLIC ${CMAKE_SOURCE_DIR}/src

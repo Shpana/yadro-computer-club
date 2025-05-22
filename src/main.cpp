@@ -1,9 +1,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "src/io/parsing.hpp"
-#include "validations/validation_pipeline.hpp"
+#include "io/parsing.hpp"
 #include "root.hpp"
+#include "validations/validation_pipeline.hpp"
 
 using namespace ComputerClub;
 
