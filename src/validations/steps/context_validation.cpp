@@ -1,6 +1,7 @@
 #include "context_validation.hpp"
 
 #include <regex>
+#include <sstream>
 
 namespace ComputerClub::Validation {
   namespace {
