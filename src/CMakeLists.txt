@@ -33,3 +33,8 @@ add_library(yadro_computer_club_lib
 target_include_directories(yadro_computer_club_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+add_executable(yadro_computer_club main.cpp)
+target_link_libraries(yadro_computer_club
+        PUBLIC yadro_computer_club_lib
+)

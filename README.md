@@ -1,36 +1,67 @@
 # yadro-computer-club
 
-## Overview
 
-![](assets/arthitecture-overview.png)
+## Обзор
+Решение тестового задания в Yadro: прототип системы, следящей за работой компьютерного клуба. 
+Подробное условие можно найти в файлах `assets/assignment.docx` или `assets/assignment.pdf`.
 
-Data validation was implemented through the `ValidationPipeline & ValidationStep` abstraction. 
-At each validation step, the correctness of the data is checked using regular expressions.
 
-In general, there was an attempt to create a layered architecture with layers of business and view logics. 
-The business logic is implemented through an `EventHandler` that deals with the logical processing of events. 
-Interaction with the data is carried out through the `ClientRegistry` and `TableRegistry`. 
-The `Accountant` entity responsible for reports generation at the end of each day (during the day it receives information about events related to tables and users). 
-The work with input data is implemented through the functions of parsing and serialization. 
-These two layers are interconnected within the `Processor` abstraction.
+## Обзор архитектуры
 
-Several tests have been written for validation and processing. The tests are written using the [GoogleTest](https://github.com/google/googletest) framework. 
+Верхнеуровнево архитектура программы такова (на картинке показаны зависимости между разными слоями системы)
+![](assets/arch-view.png)
 
-## Build & Usage
+Была попытка реализовать слоистую архитектуру со слоями бизнес-логики, взаимодействия с данными и логики ввода/вывода.
 
-CMake is used to build the project.
-The targets we are interested in are `yadro_computer_club` and `run_tests`.
+### Представление событий
+Каждое событие в системе явялется либо внутренным, либо внешним. В зависимости от типа может различаться логика взаимодействия с ними.
 
-The syntax for using `yadro_computer_club` is as follows
+В коде события представлены в виде структур, хранящих данные для обработки.
+Регистрация событий осуществляется в файле `events/events.def` с помощью макросов 
+```COMPUTER_CLUB_INTERNAL_EVENT(Id, Name) ``` и ```COMPUTER_CLUB_EXTERNAL_EVENT(Id, Name)```
+Регистрация событий нужна для ассоциирования идентификатора события с его названием.
+
+### Слой бизнес-логики
+Бизенс-логика в коде реализуется через функции `Handle##EventName##Event` именно они являются конечными точками по обработке событий. 
+Слой бизнес-логики взамодействует со слоем данных. 
+Также слой бизнес-логики может вызывать новые события (подразумевается, что вызывать можно только внутрение события, хотя в коде это никак не выражено).
+
+### Слой взаимодействия с данными
+
+Взаимодействие с данным осуществляется с помощью сущеностей
+- `Accountant`: считает статистику (сколько времени было проведено за каждым столом) и занимается генерацией отчета по собранной статистике
+- `ClientRegistry`: следит за регистрацией поситителей в клубе и очередями
+- `TableRegistry`: следит за столами (прикрепляет(открепляет) клиентов к(от) столам(-ов))
+
+### Слой ввода/вывода
+
+Логика ввода/вывода реализована через методы `Parse##EventName##Event` и `Serialize##EventName##Event`.
+Причем сериализации подвергаются все события, а парсингу только внешние.
+
+
+## Сбора и запуск
+
+Для сборки проекта испольуется CMake. В проекте присутсвтует несколько целей для сборки. Нас интересуют `yadro_computer_club`и `yadro_computer_club_tests`.
+
+```shell
+cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
+cd cmake-build-release
+cmake --build . --target yadro_computer_club
+cmake --build . --target yadro_computer_club_tests
+```
+
+
+### `yadro_computer_club`
+Синтаксис использования следующий
 ```shell
 yadro_computer_club <input>
 ```
-here, `<input>` indicates an input file.
-The `run_tests` target can be launched without additional parameters
-```shell
-run_tests
-```
+где под `<input>` понимается путь к входному файлу; 
+данные в файле должны быть корректны (в противном случае программа укажет на некорректную строчку и завершится).
 
-> [!NOTE]
-> The project was built on Ubuntu (using make) and on Windows (using the built-in tools of CLion, which, apparently,
-> uses ninja under the hood). 
+
+### `yadro_computer_club_tests`
+Синтаксис использования следующий
+```shell
+yadro_computer_club_tests
+```
