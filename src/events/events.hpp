@@ -23,7 +23,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_) {}
     ClientArrivedEvent(std::string&& client_name_,
                        TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_) {}
+        : Event(created_at_), client_name(std::move(client_name_)) {}
   };
 
   struct ClientTakeTableEvent : public Event {
@@ -35,7 +35,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_), table_id(table_id_) {}
     ClientTakeTableEvent(std::string&& client_name_, size_t table_id_,
                          TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_), table_id(table_id_) {}
+        : Event(created_at_), client_name(std::move(client_name_)), table_id(table_id_) {}
   };
 
   struct ClientWaitingEvent : public Event {
@@ -46,7 +46,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_) {}
     ClientWaitingEvent(std::string&& client_name_,
                        TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_) {}
+        : Event(created_at_), client_name(std::move(client_name_)) {}
   };
 
   struct ClientLeftEvent : public Event {
@@ -57,7 +57,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_) {}
     ClientLeftEvent(std::string&& client_name_,
                     TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_) {}
+        : Event(created_at_), client_name(std::move(client_name_)) {}
   };
 
   struct ClientLeftInternalEvent : public Event {
@@ -68,7 +68,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_) {}
     ClientLeftInternalEvent(std::string&& client_name_,
                             TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_) {}
+        : Event(created_at_), client_name(std::move(client_name_)) {}
   };
 
   struct ClientTakeTableInternalEvent : public Event {
@@ -80,7 +80,7 @@ namespace ComputerClub::Events {
         : Event(created_at_), client_name(client_name_), table_id(table_id_) {}
     ClientTakeTableInternalEvent(std::string&& client_name_, size_t table_id_,
                                  TimePoint created_at_)
-        : Event(created_at_), client_name(client_name_), table_id(table_id_) {}
+        : Event(created_at_), client_name(std::move(client_name_)), table_id(table_id_) {}
   };
 
   struct ErrorEvent : public Event {
