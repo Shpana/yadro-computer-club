@@ -5,20 +5,24 @@
 #include <set>
 #include <string>
 
-class ClientRegistry {
-public:
-  bool has_client(const std::string& client_name);
-  void add_client(const std::string& client_name);
-  void remove_client(const std::string& client_name);
+namespace ComputerClub::Registries {
+  class ClientRegistry {
+  public:
+    ClientRegistry() = default;
 
-  bool has_any_waiter();
-  void add_waiter(const std::string& client_name);
-  std::string pop_first_waiter();
-  [[nodiscard]] size_t get_waiters_count() const;
+    auto AddClient(const std::string& client_name) -> void;
+    auto RemoveClient(const std::string& client_name) -> void;
+    [[nodiscard]] auto HasClient(const std::string& client_name) const -> bool;
 
-private:
-  std::set<std::string> _arrived_clients{};
-  std::queue<std::string> _waiting_clients_queue{};
-};
+    auto AddWaiter(const std::string& client_name) -> void;
+    auto RemoveFirstWaiter() -> std::string;
+    [[nodiscard]] auto HasAnyWaiter() const -> bool;
+    [[nodiscard]] auto waiters_count() const -> size_t;
+
+  private:
+    std::set<std::string> arrived_clients_{};
+    std::queue<std::string> waiting_clients_queue_{};
+  };
+}// namespace ComputerClub::Registries
 
 #endif// YADRO_COMPUTER_CLUB_CLIENT_REGISTRY_H

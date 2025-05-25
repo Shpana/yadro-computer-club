@@ -1,36 +1,59 @@
 # yadro-computer-club
 
-## Overview
 
-![](assets/arthitecture-overview.png)
+## Обзор
+Данный проект представляет собой решение тестового задания от компании Yadro, в рамках которого был разработан прототип системы для мониторинга работы компьютерного клуба. 
+Подробное описание задания доступно в файлах `assets/assignment.docx` или `assets/assignment.pdf`.
 
-Data validation was implemented through the `ValidationPipeline & ValidationStep` abstraction. 
-At each validation step, the correctness of the data is checked using regular expressions.
 
-In general, there was an attempt to create a layered architecture with layers of business and view logics. 
-The business logic is implemented through an `EventHandler` that deals with the logical processing of events. 
-Interaction with the data is carried out through the `ClientRegistry` and `TableRegistry`. 
-The `Accountant` entity responsible for reports generation at the end of each day (during the day it receives information about events related to tables and users). 
-The work with input data is implemented through the functions of parsing and serialization. 
-These two layers are interconnected within the `Processor` abstraction.
+## Обзор архитектуры
+Архитектура программы построена по принципам слоистой структуры, которая включает в себя слои бизнес-логики, взаимодействия с данными и логики ввода/вывода. 
+На следующем изображении представлены зависимости между различными слоями системы:
+![](assets/imgs/architecture-overview.png)
 
-Several tests have been written for validation and processing. The tests are written using the [GoogleTest](https://github.com/google/googletest) framework. 
+### Представление событий
+В системе события классифицируются на внутренние и внешние, что определяет логику их обработки. 
+В коде события реализованы в виде структур, хранящих необходимые данные для обработки.
+Регистрация событий осуществляется в файле `events/events.def` с использованием макросов `COMPUTER_CLUB_INTERNAL_EVENT(Id, Name)` и `COMPUTER_CLUB_EXTERNAL_EVENT(Id, Name)`.
+Эти макросы позволяют ассоциировать идентификатор события с его названием.
 
-## Build & Usage
+### Слой бизнес-логики
+Бизнес-логика реализована через функции `Handle##EventName##Event`, которые являются конечными точками обработки событий. 
+Этот слой взаимодействует со слоем данных и может инициировать новые события (хотя это не явно отражено в коде, но подразумевается, что можно инициировать только внутренние события).
 
-CMake is used to build the project.
-The targets we are interested in are `yadro_computer_club` and `run_tests`.
+### Слой взаимодействия с данными
+Взаимодействие с данными осуществляется через следующие сущности:
+- `Accountant`: отвечает за подсчет статистики (время, проведенное за каждым столом) и генерацию отчетов на основе собранной статистики.
+- `ClientRegistry`: управляет регистрацией посетителей клуба и очередями.
+- `TableRegistry`: отслеживает состояние столов, включая прикрепление и открепление клиентов.
 
-The syntax for using `yadro_computer_club` is as follows
+### Слой ввода/вывода
+Логика ввода/вывода реализована через методы `Parse##EventName##Event` и `Serialize##EventName##Event`. 
+Все события подвергаются сериализации, в то время как парсингу подлежат только внешние события.
+
+
+## Сборка и запуск
+
+Для сборки проекта используется CMake. В проекте предусмотрены несколько целей для сборки, включая `yadro_computer_club` и `yadro_computer_club_tests`.
+
+### Инструкции по сборке
+```shell
+cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
+cd cmake-build-release
+cmake --build . --target yadro_computer_club
+cmake --build . --target yadro_computer_club_tests
+```
+
+### Использование `yadro_computer_club`
+Синтаксис использования
 ```shell
 yadro_computer_club <input>
 ```
-here, `<input>` indicates an input file.
-The `run_tests` target can be launched without additional parameters
-```shell
-run_tests
-```
+где `<input>` — путь к входному файлу. 
+Данные в файле должны быть корректными; в противном случае программа укажет на некорректную строку и завершит выполнение.
 
-> [!NOTE]
-> The project was built on Ubuntu (using make) and on Windows (using the built-in tools of CLion, which, apparently,
-> uses ninja under the hood). 
+### Использование `yadro_computer_club_tests`
+Синтаксис использования
+```shell
+yadro_computer_club_tests
+```

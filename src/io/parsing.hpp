@@ -1,15 +1,19 @@
 #ifndef YADRO_COMPUTER_CLUB_PARSING_HPP
 #define YADRO_COMPUTER_CLUB_PARSING_HPP
 
-#include "events/context.hpp"
-
 #include <sstream>
 #include <string>
 
-Context parse_context(std::istream& input);
-size_t parse_event_id_from_line(const std::string& line);
+#include "events/context.hpp"
+#include "events/events.hpp"
 
-template<class TEvent>
-TEvent parse_event_from_line(const std::string& line);
+namespace ComputerClub::IO {
+  auto ParseSpec(std::istream& is) -> Events::Context::Spec;
+  auto ParseEventId(const std::string& line) -> size_t;
+
+#define COMPUTER_CLUB_EVENT_EXTERNAL(Id, Name) \
+  auto Parse##Name##Event(const std::string& line)->Events::Name##Event;
+#include "events/events.def"
+}// namespace ComputerClub::IO
 
 #endif// YADRO_COMPUTER_CLUB_PARSING_HPP
