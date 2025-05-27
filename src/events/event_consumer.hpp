@@ -6,6 +6,7 @@
 namespace ComputerClub::Events {
   class EventConsumer {
   public:
+    virtual ~EventConsumer() = default;
 #define COMPUTER_CLUB_EVENT_EXTERNAL(Id, Name) \
   virtual auto Consume(const Name##Event& event) -> void = 0;
 #define COMPUTER_CLUB_EVENT_INTERNAL(Id, Name) \

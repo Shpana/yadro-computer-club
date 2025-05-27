@@ -32,10 +32,10 @@ namespace ComputerClub {
 
   Root::Root(std::istream& is, std::ostream& os, const Events::Context::Spec& spec)
       : is_(is), os_(os), context_(spec,
-                                   std::make_shared<RootConsumer>(os_, context_),
-                                   std::make_shared<Registries::Accountant>(spec.tables_count),
-                                   std::make_shared<Registries::ClientRegistry>(),
-                                   std::make_shared<Registries::TableRegistry>(spec.tables_count)) {}
+                                   std::make_unique<RootConsumer>(os_, context_),
+                                   std::make_unique<Registries::Accountant>(spec.tables_count),
+                                   std::make_unique<Registries::ClientRegistry>(),
+                                   std::make_unique<Registries::TableRegistry>(spec.tables_count)) {}
 
   auto Root::Run() -> void {
     os_ << time_to_string(context_.start_time()) << '\n';
